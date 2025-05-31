@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-  <title>WebAR – Dom & Namiot (maks. wykrycie)</title>
+  <title>WebAR – Dom, Namiot i Skrzynia (maks. wykrycie)</title>
 
   <script src="libs/aframe-v1.2.0.min.js"></script>
   <script src="libs/mindar-image.prod.js"></script>
@@ -29,13 +29,15 @@
   device-orientation-permission-ui="enabled:true">
 
   <a-assets>
-    <img id="tex-dom"    src="assets/S1DOM_X.png">
-    <img id="tex-namiot" src="assets/S1NAMIOT_X.png">
+    <img id="tex-dom"      src="assets/S1DOM_X.png">
+    <img id="tex-namiot"   src="assets/S1NAMIOT_X.png">
+    <img id="tex-skrzynia" src="assets/S1SKRZYNIA_X.png">
   </a-assets>
 
   <a-camera mindar-image-camera look-controls="enabled:false"></a-camera>
-  <a-entity id="anchor-namiot" mindar-image-target="targetIndex:0"></a-entity>
-  <a-entity id="anchor-dom"    mindar-image-target="targetIndex:1"></a-entity>
+  <a-entity id="anchor-namiot"   mindar-image-target="targetIndex:0"></a-entity>
+  <a-entity id="anchor-dom"      mindar-image-target="targetIndex:1"></a-entity>
+  <a-entity id="anchor-skrzynia" mindar-image-target="targetIndex:2"></a-entity>
 </a-scene>
 
 <script>
@@ -53,13 +55,21 @@ function makePlane(texSel){
   p.setAttribute('material','shader:flat;transparent:true');
   return p;
 }
+
+// Namiot (index: 0)
 const an=document.getElementById('anchor-namiot');
 an.addEventListener('targetFound',()=>{an.innerHTML='';an.appendChild(makePlane('#tex-namiot'));});
 an.addEventListener('targetLost', ()=>an.innerHTML='');
 
+// Dom (index: 1)
 const ad=document.getElementById('anchor-dom');
 ad.addEventListener('targetFound', ()=>{ad.innerHTML='';ad.appendChild(makePlane('#tex-dom'));});
 ad.addEventListener('targetLost',  ()=>ad.innerHTML='');
+
+// Skrzynia (index: 2)
+const ask=document.getElementById('anchor-skrzynia');
+ask.addEventListener('targetFound', ()=>{ask.innerHTML='';ask.appendChild(makePlane('#tex-skrzynia'));});
+ask.addEventListener('targetLost',  ()=>ask.innerHTML='');
 </script>
 </body>
 </html>
