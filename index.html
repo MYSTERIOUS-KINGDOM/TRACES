@@ -4,11 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
   <title>WebAR – Dom, Namiot i Skrzynia (maks. wykrycie)</title>
-
   <script src="libs/aframe-v1.2.0.min.js"></script>
   <script src="libs/mindar-image.prod.js"></script>
   <script src="libs/mindar-image-aframe.prod.js"></script>
-
   <style>
     html,body{margin:0;height:100%;overflow:hidden;background:transparent;font-family:System-ui}
     a-scene{width:100vw;height:100vh;background:transparent!important}
@@ -43,7 +41,7 @@
 <script>
 document.querySelector('a-scene').addEventListener('renderstart',()=>loader.remove());
 
-// Nakładka zawsze pełen marker, odsunięcie 0.005
+// Przesunięcie Y = 0.05 (pół centymetra w górę w AR)
 function makePlane(texSel){
   const img=document.querySelector(texSel);
   const ar = img.naturalHeight/img.naturalWidth;
@@ -51,7 +49,7 @@ function makePlane(texSel){
   p.setAttribute('src',texSel);
   p.setAttribute('width','1');
   p.setAttribute('height',ar.toString());
-  p.setAttribute('position','0 0 0.005');
+  p.setAttribute('position','0 0.05 0.005'); // tu przesuwasz!
   p.setAttribute('material','shader:flat;transparent:true');
   return p;
 }
