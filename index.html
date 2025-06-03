@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-  <title>WebAR – Chochlik / Foots (wyrównane)</title>
+  <title>WebAR – Chochlik / Foots (final)</title>
 
   <script src="libs/aframe-v1.2.0.min.js"></script>
   <script src="libs/mindar-image.prod.js"></script>
@@ -12,7 +12,8 @@
   <style>
     html,body{margin:0;height:100%;overflow:hidden;background:transparent;font-family:System-ui}
     a-scene{width:100vw;height:100vh;background:transparent!important}
-    #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;border:2px solid #fff;border-radius:8px;pointer-events:none;z-index:20}
+    #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;
+         border:2px solid #fff;border-radius:8px;pointer-events:none;z-index:20}
   </style>
 </head>
 <body>
@@ -20,7 +21,7 @@
 
   <a-scene
     embedded
-    mindar-image="imageTargetSrc:targets.mind;autoStart:true;filterBeta:0.95;filterMinCF:0.2"
+    mindar-image="imageTargetSrc:targets.mind;autoStart:true;filterBeta:0.95;filterMinCF:0.05"
     vr-mode-ui="enabled:false"
     device-orientation-permission-ui="enabled:false">
 
@@ -31,13 +32,13 @@
 
     <a-camera mindar-image-camera look-controls="enabled:false"></a-camera>
 
-    <!-- target 0 = pierwsze ślady, target 1 = drugie -->
+    <!-- target 0 i 1 -->
     <a-entity id="anchor-foots1" mindar-image-target="targetIndex:0"></a-entity>
     <a-entity id="anchor-foots2" mindar-image-target="targetIndex:1"></a-entity>
   </a-scene>
 
   <script>
-    /* płaszczyzna przesunięta ↓ 0.50 (połowa wysokości targetu) */
+    /* plane – szerokość = target, opuszczony ↓ 1.00 (ok. 2× niżej niż wcześniej) */
     function makePlane(sel){
       const img=document.querySelector(sel);
       const ar = img.naturalHeight / img.naturalWidth;
@@ -45,7 +46,7 @@
       p.setAttribute('src',sel);
       p.setAttribute('width','1');
       p.setAttribute('height',ar.toString());
-      p.setAttribute('position','0 -0.50 0');   /* ↓ jeszcze o połowę niżej */
+      p.setAttribute('position','0 -1.00 0');          /* ↓ 1.00 jednostki */
       p.setAttribute('material','shader:flat;transparent:true');
       return p;
     }
@@ -55,8 +56,8 @@
       a.addEventListener('targetFound',()=>{a.innerHTML='';a.appendChild(makePlane(texSel));});
       a.addEventListener('targetLost', ()=>a.innerHTML='');
     }
-    bind('anchor-foots1','#tex-foots1');   /* widoczny po rozpoznaniu targetu #0 */
-    bind('anchor-foots2','#tex-foots2');   /* widoczny po rozpoznaniu targetu #1 */
+    bind('anchor-foots1','#tex-foots1');
+    bind('anchor-foots2','#tex-foots2');
   </script>
 </body>
 </html>
