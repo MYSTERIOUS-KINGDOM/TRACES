@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-  <title>WebAR – Chochlik / Foots (final)</title>
+  <title>WebAR – Chochlik / Foots (offset 0.25)</title>
 
   <script src="libs/aframe-v1.2.0.min.js"></script>
   <script src="libs/mindar-image.prod.js"></script>
@@ -12,8 +12,8 @@
   <style>
     html,body{margin:0;height:100%;overflow:hidden;background:transparent;font-family:System-ui}
     a-scene{width:100vw;height:100vh;background:transparent!important}
-    #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;
-         border:2px solid #fff;border-radius:8px;pointer-events:none;z-index:20}
+    #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;border:2px solid #fff;
+         border-radius:8px;pointer-events:none;z-index:20}
   </style>
 </head>
 <body>
@@ -32,13 +32,12 @@
 
     <a-camera mindar-image-camera look-controls="enabled:false"></a-camera>
 
-    <!-- target 0 i 1 -->
     <a-entity id="anchor-foots1" mindar-image-target="targetIndex:0"></a-entity>
     <a-entity id="anchor-foots2" mindar-image-target="targetIndex:1"></a-entity>
   </a-scene>
 
   <script>
-    /* plane – szerokość = target, opuszczony ↓ 1.00 (ok. 2× niżej niż wcześniej) */
+    /* płaszczyzna: ↓ 0.25 (≈ ¼ wysokości targetu) i delikatnie do przodu, by nie zlała się z kartką */
     function makePlane(sel){
       const img=document.querySelector(sel);
       const ar = img.naturalHeight / img.naturalWidth;
@@ -46,7 +45,7 @@
       p.setAttribute('src',sel);
       p.setAttribute('width','1');
       p.setAttribute('height',ar.toString());
-      p.setAttribute('position','0 -1.00 0');          /* ↓ 1.00 jednostki */
+      p.setAttribute('position','0 -0.25 0.01');   /* Y –0.25, Z +0.01 */
       p.setAttribute('material','shader:flat;transparent:true');
       return p;
     }
@@ -56,8 +55,8 @@
       a.addEventListener('targetFound',()=>{a.innerHTML='';a.appendChild(makePlane(texSel));});
       a.addEventListener('targetLost', ()=>a.innerHTML='');
     }
-    bind('anchor-foots1','#tex-foots1');
-    bind('anchor-foots2','#tex-foots2');
+    bind('anchor-foots1','#tex-foots1');   /* target 0 */
+    bind('anchor-foots2','#tex-foots2');   /* target 1 – pamiętaj, że musi istnieć w targets.mind */
   </script>
 </body>
 </html>
