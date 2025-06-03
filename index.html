@@ -13,18 +13,19 @@
   <style>
     html,body{margin:0;height:100%;overflow:hidden;background:transparent;font-family:System-ui}
     a-scene{width:100vw;height:100vh;background:transparent!important}
-    /* ikonka w rogu */
-    #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;border:2px solid #fff;border-radius:8px;pointer-events:none;z-index:20}
+    #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;border:2px solid #fff;
+         border-radius:8px;pointer-events:none;z-index:20}
   </style>
 </head>
 <body>
+  <!-- tylko ikonka w rogu -->
   <img id="hud" src="assets/foots.png" alt="logo">
 
   <a-scene
     embedded
-    mindar-image="imageTargetSrc:targets.mind; autoStart:true; filterBeta:0.95; filterMinCF:0.2"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
+    mindar-image="imageTargetSrc:targets.mind;autoStart:true;filterBeta:0.95;filterMinCF:0.2"
+    vr-mode-ui="enabled:false"
+    device-orientation-permission-ui="enabled:false">
 
     <a-assets>
       <img id="tex-foots1" src="assets/Chochlik-foots1.png">
@@ -38,38 +39,27 @@
   </a-scene>
 
   <script>
-  /* tworzy plane bez jakiegokolwiek przesunięcia */
-  function makePlane(sel){
-    const img=document.querySelector(sel);
-    const ar = img.naturalHeight/img.naturalWidth;
-    const p  = document.createElement('a-plane');
-    p.setAttribute('src',sel);
-    p.setAttribute('width','1');
-    p.setAttribute('height',ar.toString());
-    p.setAttribute('position','0 0 0');                     /* 0-offset ⇒ środek targetu */
-    p.setAttribute('material','shader:flat;transparent:true');
-    return p;
-  }
+    /* plane bez przesunięcia – idealnie pokrywa target */
+    function makePlane(sel){
+      const img=document.querySelector(sel);
+      const ar = img.naturalHeight/img.naturalWidth;
+      const p  = document.createElement('a-plane');
+      p.setAttribute('src',sel);
+      p.setAttribute('width','1');
+      p.setAttribute('height',ar.toString());
+      p.setAttribute('position','0 0 0');
+      p.setAttribute('material','shader:flat;transparent:true');
+      return p;
+    }
 
-  /* podpina odpowiednią teksturę, gdy target się pojawi / znika */
-  function bind(anchorId, texSel){
-    const a=document.getElementById(anchorId);
-    a.addEventListener('targetFound',()=>{a.innerHTML='';a.appendChild(makePlane(texSel));});
-    a.addEventListener('targetLost', ()=>a.innerHTML='');
-  }
-  bind('anchor-foots1','#tex-foots1');
-  bind('anchor-foots2','#tex-foots2');
-
-  /* TAP = szybki restart skanowania (bez dodatkowych UI) */
-  function restartAR(){
-    const scene  = document.querySelector('a-scene');
-    const mindAR = scene.components['mindar-image'];
-    if(!mindAR?.controller) return;
-    mindAR.controller.stop();
-    document.querySelectorAll('[mindar-image-target]').forEach(el=>el.innerHTML='');
-    mindAR.controller.start();
-  }
-  window.addEventListener('click',restartAR);
+    /* podłącz tekstury do anchorów */
+    function bind(anchorId, texSel){
+      const a=document.getElementById(anchorId);
+      a.addEventListener('targetFound',()=>{a.innerHTML='';a.appendChild(makePlane(texSel));});
+      a.addEventListener('targetLost', ()=>a.innerHTML='');
+    }
+    bind('anchor-foots1','#tex-foots1');
+    bind('anchor-foots2','#tex-foots2');
   </script>
 </body>
 </html>
