@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-  <title>WebAR – Chochlik / Foots (szybkie uruchamianie)</title>
+  <title>WebAR – Chochlik / Foots</title>
 
+  <!-- biblioteki -->
   <script src="libs/aframe-v1.2.0.min.js"></script>
   <script src="libs/mindar-image.prod.js"></script>
   <script src="libs/mindar-image-aframe.prod.js"></script>
@@ -12,20 +13,18 @@
   <style>
     html,body{margin:0;height:100%;overflow:hidden;background:transparent;font-family:System-ui}
     a-scene{width:100vw;height:100vh;background:transparent!important}
+    /* ikonka w rogu */
     #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;border:2px solid #fff;border-radius:8px;pointer-events:none;z-index:20}
   </style>
 </head>
 <body>
-  <!-- ikonka w rogu -->
   <img id="hud" src="assets/foots.png" alt="logo">
 
   <a-scene
     embedded
-    mindar-image="imageTargetSrc:targets.mind;autoStart:true;
-                  filterBeta:0.95;
-                  filterMinCF:0.2"          <!-- WYŻSZA WARTOŚĆ = MNIEJSZA CZUŁOŚĆ -->
-    vr-mode-ui="enabled:false"
-    device-orientation-permission-ui="enabled:true">
+    mindar-image="imageTargetSrc:targets.mind; autoStart:true; filterBeta:0.95; filterMinCF:0.2"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
 
     <a-assets>
       <img id="tex-foots1" src="assets/Chochlik-foots1.png">
@@ -39,7 +38,7 @@
   </a-scene>
 
   <script>
-  /* tworzy plane z PNG – BEZ przesunięcia */
+  /* tworzy plane bez jakiegokolwiek przesunięcia */
   function makePlane(sel){
     const img=document.querySelector(sel);
     const ar = img.naturalHeight/img.naturalWidth;
@@ -47,12 +46,12 @@
     p.setAttribute('src',sel);
     p.setAttribute('width','1');
     p.setAttribute('height',ar.toString());
-    p.setAttribute('position','0 0 0');                 /* brak offsetu → idealne pokrycie */
+    p.setAttribute('position','0 0 0');                     /* 0-offset ⇒ środek targetu */
     p.setAttribute('material','shader:flat;transparent:true');
     return p;
   }
 
-  /* przypina do anchorów */
+  /* podpina odpowiednią teksturę, gdy target się pojawi / znika */
   function bind(anchorId, texSel){
     const a=document.getElementById(anchorId);
     a.addEventListener('targetFound',()=>{a.innerHTML='';a.appendChild(makePlane(texSel));});
@@ -61,11 +60,11 @@
   bind('anchor-foots1','#tex-foots1');
   bind('anchor-foots2','#tex-foots2');
 
-  /* TAP = szybki restart skanowania (bez loadera) */
+  /* TAP = szybki restart skanowania (bez dodatkowych UI) */
   function restartAR(){
     const scene  = document.querySelector('a-scene');
     const mindAR = scene.components['mindar-image'];
-    if(!mindAR || !mindAR.controller) return;
+    if(!mindAR?.controller) return;
     mindAR.controller.stop();
     document.querySelectorAll('[mindar-image-target]').forEach(el=>el.innerHTML='');
     mindAR.controller.start();
