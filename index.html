@@ -12,10 +12,8 @@
   <style>
     html,body{margin:0;height:100%;overflow:hidden;background:transparent;font-family:System-ui}
     a-scene{width:100vw;height:100vh;background:transparent!important}
-    #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;border:2px solid #fff;
-         border-radius:8px;pointer-events:none;z-index:20}
-    #loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-            background:#000c;color:#fff;font-size:18px;z-index:15}
+    #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;border:2px solid #fff;border-radius:8px;pointer-events:none;z-index:20}
+    #loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000c;color:#fff;font-size:18px;z-index:15}
   </style>
 </head>
 <body>
@@ -32,7 +30,7 @@
     <img id="tex-dom"      src="assets/S1DOM_X.png">
     <img id="tex-namiot"   src="assets/S1NAMIOT_X.png">
     <img id="tex-skrzynia" src="assets/S1SKRZYNIA_X.png">
-    <img id="tex-eq"       src="assets/S2EQ.png">            <!-- nowy obiekt -->
+    <img id="tex-eq"       src="assets/S2EQ.png">
   </a-assets>
 
   <a-camera mindar-image-camera look-controls="enabled:false"></a-camera>
@@ -44,9 +42,10 @@
 </a-scene>
 
 <script>
+/* ukryj loader, kiedy MindAR zacznie renderować */
 document.querySelector('a-scene').addEventListener('renderstart',()=>loader.remove());
 
-// y = 0.05 m (-- 5 cm w górę)
+/* pomocnik – tworzy plane z teksturą, przesunięcie 5 cm w górę */
 function makePlane(sel){
   const img=document.querySelector(sel);
   const ar = img.naturalHeight/img.naturalWidth;
@@ -59,31 +58,38 @@ function makePlane(sel){
   return p;
 }
 
-// helper
+/* podpinanie obrazków do anchorów */
 function bind(anchorId, texSel){
   const a=document.getElementById(anchorId);
   a.addEventListener('targetFound',()=>{a.innerHTML='';a.appendChild(makePlane(texSel));});
   a.addEventListener('targetLost', ()=>a.innerHTML='');
 }
-bind('anchor-namiot',  '#tex-namiot');
-bind('anchor-dom',     '#tex-dom');
+bind('anchor-namiot','#tex-namiot');
+bind('anchor-dom','#tex-dom');
 bind('anchor-skrzynia','#tex-skrzynia');
-bind('anchor-eq',      '#tex-eq');  // nowy obiekt
+bind('anchor-eq','#tex-eq');
 
-/* TAP = STOP + RELOAD (po 0.5 s) */
-function quitAR(){
-  const scene=document.querySelector('a-scene');
-  const mindar=scene.components['mindar-image'];
-  if(mindar?.controller){
-    mindar.controller.stop();
-    mindar.controller.video?.srcObject?.getTracks().forEach(t=>t.stop());
-  }
-  scene.renderer?.dispose();
-  // mały timeout → kamera zdąży się zwolnić, wtedy reload nie wisi na loaderze
-  setTimeout(()=>location.reload(),500);
+/* === TAP = szybki reset (stop ➜ start) bez przeładowania strony === */
+function restartAR(){
+  const scene  = document.querySelector('a-scene');
+  const mindAR = scene.components['mindar-image'];
+
+  if(!mindAR || !mindAR.controller) return;
+
+  /* zatrzymaj tracking */
+  mindAR.controller.stop();
+
+  /* wyczyść wszystkie planes z anchorów */
+  document.querySelectorAll('[mindar-image-target]').forEach(el=>el.innerHTML='');
+
+  /* natychmiast ponownie uruchom tracking */
+  mindAR.controller.start();
+
+  /* opcjonalnie pokaż na ułamek sekundy loader („mignięcie”) */
+  loader.style.display='flex';
+  setTimeout(()=>loader.style.display='none',150);
 }
-window.addEventListener('click',quitAR,{once:true});
+window.addEventListener('click',restartAR);   /* każdy tap → restart skanowania */
 </script>
 </body>
 </html>
-
