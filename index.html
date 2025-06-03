@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-  <title>WebAR – Chochlik / Foots</title>
+  <title>WebAR – Chochlik / Foots (v-center)</title>
 
+  <!-- biblioteki -->
   <script src="libs/aframe-v1.2.0.min.js"></script>
   <script src="libs/mindar-image.prod.js"></script>
   <script src="libs/mindar-image-aframe.prod.js"></script>
@@ -12,10 +13,12 @@
   <style>
     html,body{margin:0;height:100%;overflow:hidden;background:transparent;font-family:System-ui}
     a-scene{width:100vw;height:100vh;background:transparent!important}
-    #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;border:2px solid #fff;border-radius:8px;pointer-events:none;z-index:20}
+    #hud{position:fixed;top:8px;left:8px;width:64px;background:#fff8;border:2px solid #fff;
+         border-radius:8px;pointer-events:none;z-index:20}
   </style>
 </head>
 <body>
+  <!-- ikonka w rogu -->
   <img id="hud" src="assets/foots.png" alt="logo">
 
   <a-scene
@@ -31,20 +34,21 @@
 
     <a-camera mindar-image-camera look-controls="enabled:false"></a-camera>
 
+    <!-- dwa cele -->
     <a-entity id="anchor-foots1" mindar-image-target="targetIndex:0"></a-entity>
     <a-entity id="anchor-foots2" mindar-image-target="targetIndex:1"></a-entity>
   </a-scene>
 
   <script>
-    /* plane – opuszczony o 10 cm (-0.10 m) */
+    /* plane: szerokość = 1 (cały target), przesunięcie w dół o 0.35 → ~środek domu */
     function makePlane(sel){
       const img=document.querySelector(sel);
-      const ar = img.naturalHeight/img.naturalWidth;
+      const ar = img.naturalHeight / img.naturalWidth;
       const p  = document.createElement('a-plane');
       p.setAttribute('src',sel);
       p.setAttribute('width','1');
       p.setAttribute('height',ar.toString());
-      p.setAttribute('position','0 -0.10 0');     /* ↓ 10 cm, idealnie na linii budynku */
+      p.setAttribute('position','0 -0.35 0');          /* ↓ 0.35 jednostki ≈ linia dachu */
       p.setAttribute('material','shader:flat;transparent:true');
       return p;
     }
