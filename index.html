@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-  <title>WebAR – Dom, Namiot, Skrzynia, Ekwipunek</title>
+  <title>WebAR – Chochlik / Foots (2 cele)</title>
 
   <script src="libs/aframe-v1.2.0.min.js"></script>
   <script src="libs/mindar-image.prod.js"></script>
@@ -17,79 +17,69 @@
   </style>
 </head>
 <body>
-<img id="hud" src="assets/WIZJA.png" alt="logo">
-<div id="loader">🔍 Ładowanie kamery…</div>
+  <!-- nowa ikonka w rogu -->
+  <img id="hud" src="assets/foots.png" alt="logo">
+  <div id="loader">🔍 Ładowanie kamery…</div>
 
-<a-scene
-  embedded
-  mindar-image="imageTargetSrc:targets.mind;autoStart:true;filterBeta:0.95;filterMinCF:0.00001"
-  vr-mode-ui="enabled:false"
-  device-orientation-permission-ui="enabled:true">
+  <a-scene
+    embedded
+    mindar-image="imageTargetSrc:targets.mind;autoStart:true;filterBeta:0.95;filterMinCF:0.00001"
+    vr-mode-ui="enabled:false"
+    device-orientation-permission-ui="enabled:true">
 
-  <a-assets>
-    <img id="tex-dom"      src="assets/S1DOM_X.png">
-    <img id="tex-namiot"   src="assets/S1NAMIOT_X.png">
-    <img id="tex-skrzynia" src="assets/S1SKRZYNIA_X.png">
-    <img id="tex-eq"       src="assets/S2EQ.png">
-  </a-assets>
+    <a-assets>
+      <img id="tex-foots1" src="assets/Chochlik-foots1.png">
+      <img id="tex-foots2" src="assets/Chochlik-foots2.png">
+    </a-assets>
 
-  <a-camera mindar-image-camera look-controls="enabled:false"></a-camera>
+    <a-camera mindar-image-camera look-controls="enabled:false"></a-camera>
 
-  <a-entity id="anchor-namiot"   mindar-image-target="targetIndex:0"></a-entity>
-  <a-entity id="anchor-dom"      mindar-image-target="targetIndex:1"></a-entity>
-  <a-entity id="anchor-skrzynia" mindar-image-target="targetIndex:2"></a-entity>
-  <a-entity id="anchor-eq"       mindar-image-target="targetIndex:3"></a-entity>
-</a-scene>
+    <!-- dwa targety -->
+    <a-entity id="anchor-foots1" mindar-image-target="targetIndex:0"></a-entity>
+    <a-entity id="anchor-foots2" mindar-image-target="targetIndex:1"></a-entity>
+  </a-scene>
 
-<script>
-/* ukryj loader, kiedy MindAR zacznie renderować */
-document.querySelector('a-scene').addEventListener('renderstart',()=>loader.remove());
+  <script>
+  /* ukryj loader, kiedy MindAR zacznie renderować */
+  document.querySelector('a-scene').addEventListener('renderstart',()=>loader.remove());
 
-/* pomocnik – tworzy plane z teksturą, przesunięcie 5 cm w górę */
-function makePlane(sel){
-  const img=document.querySelector(sel);
-  const ar = img.naturalHeight/img.naturalWidth;
-  const p  = document.createElement('a-plane');
-  p.setAttribute('src',sel);
-  p.setAttribute('width','1');
-  p.setAttribute('height',ar.toString());
-  p.setAttribute('position','0 0.05 0.005');
-  p.setAttribute('material','shader:flat;transparent:true');
-  return p;
-}
+  /* tworzy plane z teksturą, przesunięcie 5 cm w górę */
+  function makePlane(sel){
+    const img=document.querySelector(sel);
+    const ar = img.naturalHeight/img.naturalWidth;
+    const p  = document.createElement('a-plane');
+    p.setAttribute('src',sel);
+    p.setAttribute('width','1');
+    p.setAttribute('height',ar.toString());
+    p.setAttribute('position','0 0.05 0.005');
+    p.setAttribute('material','shader:flat;transparent:true');
+    return p;
+  }
 
-/* podpinanie obrazków do anchorów */
-function bind(anchorId, texSel){
-  const a=document.getElementById(anchorId);
-  a.addEventListener('targetFound',()=>{a.innerHTML='';a.appendChild(makePlane(texSel));});
-  a.addEventListener('targetLost', ()=>a.innerHTML='');
-}
-bind('anchor-namiot','#tex-namiot');
-bind('anchor-dom','#tex-dom');
-bind('anchor-skrzynia','#tex-skrzynia');
-bind('anchor-eq','#tex-eq');
+  /* podpinanie obrazków do anchorów */
+  function bind(anchorId, texSel){
+    const a=document.getElementById(anchorId);
+    a.addEventListener('targetFound',()=>{a.innerHTML='';a.appendChild(makePlane(texSel));});
+    a.addEventListener('targetLost', ()=>a.innerHTML='');
+  }
+  bind('anchor-foots1','#tex-foots1');
+  bind('anchor-foots2','#tex-foots2');
 
-/* === TAP = szybki reset (stop ➜ start) bez przeładowania strony === */
-function restartAR(){
-  const scene  = document.querySelector('a-scene');
-  const mindAR = scene.components['mindar-image'];
+  /* TAP = szybki reset (stop ➜ start) bez przeładowania strony */
+  function restartAR(){
+    const scene  = document.querySelector('a-scene');
+    const mindAR = scene.components['mindar-image'];
 
-  if(!mindAR || !mindAR.controller) return;
+    if(!mindAR || !mindAR.controller) return;
 
-  /* zatrzymaj tracking */
-  mindAR.controller.stop();
+    mindAR.controller.stop();
+    document.querySelectorAll('[mindar-image-target]').forEach(el=>el.innerHTML='');
+    mindAR.controller.start();
 
-  /* wyczyść wszystkie planes z anchorów */
-  document.querySelectorAll('[mindar-image-target]').forEach(el=>el.innerHTML='');
-
-  /* natychmiast ponownie uruchom tracking */
-  mindAR.controller.start();
-
-  /* opcjonalnie pokaż na ułamek sekundy loader („mignięcie”) */
-  loader.style.display='flex';
-  setTimeout(()=>loader.style.display='none',150);
-}
-window.addEventListener('click',restartAR);   /* każdy tap → restart skanowania */
-</script>
+    loader.style.display='flex';
+    setTimeout(()=>loader.style.display='none',150);
+  }
+  window.addEventListener('click',restartAR);   /* każdy tap → restart skanowania */
+  </script>
 </body>
 </html>
