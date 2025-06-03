@@ -36,7 +36,7 @@
   </a-scene>
 
   <script>
-    /* plane bez z-offsetu, opuszczony o ~10 cm (0.1 m) */
+    /* plane – opuszczony o 10 cm (-0.10 m) */
     function makePlane(sel){
       const img=document.querySelector(sel);
       const ar = img.naturalHeight/img.naturalWidth;
@@ -44,7 +44,7 @@
       p.setAttribute('src',sel);
       p.setAttribute('width','1');
       p.setAttribute('height',ar.toString());
-      p.setAttribute('position','0 -0.10 0');        /* ↓ 10 cm – dopasowanie do targetu */
+      p.setAttribute('position','0 -0.10 0');     /* ↓ 10 cm, idealnie na linii budynku */
       p.setAttribute('material','shader:flat;transparent:true');
       return p;
     }
