@@ -3,10 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-  <title>WebAR – Dom, Namiot i Skrzynia (maks. wykrycie)</title>
+  <title>WebAR – Dom, Namiot, Skrzynia, Ekwipunek</title>
+
   <script src="libs/aframe-v1.2.0.min.js"></script>
   <script src="libs/mindar-image.prod.js"></script>
   <script src="libs/mindar-image-aframe.prod.js"></script>
+
   <style>
     html,body{margin:0;height:100%;overflow:hidden;background:transparent;font-family:System-ui}
     a-scene{width:100vw;height:100vh;background:transparent!important}
@@ -30,16 +32,19 @@
     <img id="tex-dom"      src="assets/S1DOM_X.png">
     <img id="tex-namiot"   src="assets/S1NAMIOT_X.png">
     <img id="tex-skrzynia" src="assets/S1SKRZYNIA_X.png">
+    <img id="tex-eq"       src="assets/S2EQ.png">             <!-- nowy obiekt -->
   </a-assets>
 
   <a-camera mindar-image-camera look-controls="enabled:false"></a-camera>
+
   <a-entity id="anchor-namiot"   mindar-image-target="targetIndex:0"></a-entity>
   <a-entity id="anchor-dom"      mindar-image-target="targetIndex:1"></a-entity>
   <a-entity id="anchor-skrzynia" mindar-image-target="targetIndex:2"></a-entity>
+  <a-entity id="anchor-eq"       mindar-image-target="targetIndex:3"></a-entity> <!-- nowy anchor -->
 </a-scene>
 
 <script>
-document.querySelector('a-scene').addEventListener('renderstart',()=>loader.remove());
+document.querySelector('a-scene').addEventListener('renderstart', ()=>loader.remove());
 
 // Przesunięcie Y = 0.05 (pół centymetra w górę w AR)
 function makePlane(texSel){
@@ -49,7 +54,7 @@ function makePlane(texSel){
   p.setAttribute('src',texSel);
   p.setAttribute('width','1');
   p.setAttribute('height',ar.toString());
-  p.setAttribute('position','0 0.05 0.005'); // tu przesuwasz!
+  p.setAttribute('position','0 0.05 0.005');
   p.setAttribute('material','shader:flat;transparent:true');
   return p;
 }
@@ -68,6 +73,27 @@ ad.addEventListener('targetLost',  ()=>ad.innerHTML='');
 const ask=document.getElementById('anchor-skrzynia');
 ask.addEventListener('targetFound', ()=>{ask.innerHTML='';ask.appendChild(makePlane('#tex-skrzynia'));});
 ask.addEventListener('targetLost',  ()=>ask.innerHTML='');
+
+// Ekwipunek (index: 3)
+const ae=document.getElementById('anchor-eq');
+ae.addEventListener('targetFound', ()=>{ae.innerHTML='';ae.appendChild(makePlane('#tex-eq'));});
+ae.addEventListener('targetLost',  ()=>ae.innerHTML='');
+
+/* TAP = wyłączenie i reset AR */
+function quitAR(){
+  const sceneEl=document.querySelector('a-scene');
+  const mindar  =sceneEl.components['mindar-image'];
+  if(mindar && mindar.controller){
+    mindar.controller.stop();
+    if(mindar.controller.video?.srcObject){
+      mindar.controller.video.srcObject.getTracks().forEach(t=>t.stop());
+    }
+  }
+  if(sceneEl.renderer) sceneEl.renderer.dispose();
+  sceneEl.parentNode.removeChild(sceneEl);
+  setTimeout(()=>location.reload(),50);
+}
+window.addEventListener('click',quitAR,{once:true});
 </script>
 </body>
 </html>
